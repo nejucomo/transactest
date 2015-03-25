@@ -39,7 +39,7 @@ func runBytes(data []byte) {
 }
 
 func runTestSpec(spec TestSpec) {
-	log.Fatalf("Not implemented.\n")
+	log.Fatalln(spec)
 }
 
 func checkErr(err error) {
@@ -53,8 +53,8 @@ type TestSpec struct {
 }
 
 type TransactionAssertions struct {
-	Transaction
-	Assertions
+	transaction Transaction
+	assertions Assertions
 }
 
 type Transaction struct {
