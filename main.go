@@ -30,12 +30,17 @@ func runReader(r io.Reader) {
 }
 
 func runBytes(data []byte) {
-	var spec TestSpec
-
-	err := json.Unmarshal(data, &spec)
+	spec, err := parseTestSpec(data)
 	checkErr(err)
 
 	runTestSpec(spec)
+}
+
+func parseTestSpec(data []byte) (TestSpec, error) {
+	var spec TestSpec
+
+	err := json.Unmarshal(data, &spec)
+	return spec, err
 }
 
 func runTestSpec(spec TestSpec) {
