@@ -54,22 +54,22 @@ func checkErr(err error) {
 }
 
 type TestSpec struct {
-	transactions []TransactionAssertions
+	Transactions []TransactionAssertions
 }
 
 type TransactionAssertions struct {
-	transaction Transaction
-	assertions Assertions
+	Transaction Transaction
+	Assertions Assertions
 }
 
 type Transaction struct {
-	data []byte
-	gasLimit Gas
-	gasPrice Gas
-	nonce SeqNum
-	sender AccountId
-	to AccountId
-	value Ether
+	Data []byte
+	GasLimit Gas
+	GasPrice Gas
+	Nonce SeqNum
+	Sender AccountId
+	To AccountId
+	Value Ether
 }
 
 type Gas uint
@@ -78,18 +78,14 @@ type AccountId uint
 type Ether uint
 
 type Assertions struct {
-	accounts map[AccountId]AccountAssertion
+	Accounts map[AccountId]AccountAssertion
 }
 
 type AccountAssertion struct {
-	balance Ether
-	code ByteCode
-	nonce SeqNum
-	storage StorageAssertion
+	Balance Ether
+	Code ByteCode
+	Nonce SeqNum
+	Storage map[string]string
 }
 
 type ByteCode []byte
-
-type StorageAssertion struct {
-	data map[string]string
-}
