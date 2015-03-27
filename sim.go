@@ -7,7 +7,18 @@ import (
 
 
 type TestSim struct {
-	db ethdb.MemDatabase
+	db *ethdb.MemDatabase
+}
+
+
+func NewTestSim() (sim TestSim, err error) {
+	var db *ethdb.MemDatabase
+
+	db, err = ethdb.NewMemDatabase()
+	if err == nil {
+		sim = TestSim{db}
+	}
+	return
 }
 
 

@@ -32,18 +32,23 @@ func runTestSpec(spec TestSpec) (successes uint, failures uint, err error) {
 	failures = 0
     err = nil
 
-	sim := TestSim{} // In the future initialize this from TestSpec.
+	var sim TestSim
+
+	sim, err = NewTestSim()
+	if err != nil {
+		return
+	}
 
 	for _, ta := range spec.Transactions {
-		err2 := sim.applyTransaction(&ta.Transaction)
-		if err2 != nil {
-			err = err2
+		err = sim.applyTransaction(&ta.Transaction)
+		if err != nil {
 			return
 		}
 
-		s, f, err3 := sim.checkAssertions(&ta.Assertions)
-		if err3 != nil {
-			err = err3
+		var s, f uint
+
+		s, f, err = sim.checkAssertions(&ta.Assertions)
+		if err != nil {
 			return
 		}
 
