@@ -29,9 +29,27 @@ func runBytes(data []byte) {
 }
 
 func (spec *TestSpec) run() (successes uint, failures uint, err error) {
-	err = errors.New("not implemented")
+	successes = 0
+	failures = 0
+
+	for _, ta := range spec.Transactions {
+		s, f, err2 := ta.run()
+		if err2 != nil {
+			err = err2
+			return
+		}
+		successes += s
+		failures += f
+	}
+
 	return
 }
+
+func (ta *TransactionAssertions) run() (successes uint, failures uint, err error) {
+	err = errors.New("Not Implemented.")
+	return
+}
+
 
 func checkErr(err error) {
 	if err != nil {
