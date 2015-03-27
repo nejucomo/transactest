@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"log"
+	"errors"
 	"io/ioutil"
 )
 
@@ -24,11 +25,12 @@ func runBytes(data []byte) {
 	spec, err := parseTestSpec(data)
 	checkErr(err)
 
-	spec.runTestSpec()
+	spec.run()
 }
 
-func (spec *TestSpec) runTestSpec() {
-	log.Fatalln(spec)
+func (spec *TestSpec) run() (successes uint, failures uint, err error) {
+	err = errors.New("not implemented")
+	return
 }
 
 func checkErr(err error) {
