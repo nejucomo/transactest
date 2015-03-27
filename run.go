@@ -4,7 +4,6 @@ import (
 	"io"
 	"os"
 	"log"
-	"errors"
 	"io/ioutil"
 )
 
@@ -25,31 +24,35 @@ func runBytes(data []byte) {
 	spec, err := parseTestSpec(data)
 	checkErr(err)
 
-	spec.run()
+	runTestSpec(spec)
 }
 
-func (spec *TestSpec) run() (successes uint, failures uint, err error) {
+func runTestSpec(spec TestSpec) (successes uint, failures uint, err error) {
 	successes = 0
 	failures = 0
+    err = nil
+
+	sim := TestSim{} // In the future initialize this from TestSpec.
 
 	for _, ta := range spec.Transactions {
-		s, f, err2 := ta.run()
+		err2 := sim.applyTransaction(&ta.Transaction)
 		if err2 != nil {
 			err = err2
 			return
 		}
+
+		s, f, err3 := sim.checkAssertions(&ta.Assertions)
+		if err3 != nil {
+			err = err3
+			return
+		}
+
 		successes += s
 		failures += f
 	}
 
 	return
 }
-
-func (ta *TransactionAssertions) run() (successes uint, failures uint, err error) {
-	err = errors.New("Not Implemented.")
-	return
-}
-
 
 func checkErr(err error) {
 	if err != nil {

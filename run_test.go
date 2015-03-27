@@ -6,7 +6,7 @@ import "testing"
 func Test_TestSpec_run_empty(t *testing.T) {
 	var spec TestSpec = TestSpec{[]TransactionAssertions{}}
 
-	successes, failures, err := spec.run()
+	successes, failures, err := runTestSpec(spec)
 
 	if err != nil {
 		t.Errorf("Did not expect this error: %+v\n", err)
