@@ -9,15 +9,19 @@ func Test_parseTestSpec_invalid_json(t *testing.T) {
 	parseTestSpec_expectErr(t, "!")
 }
 
+/* skip
 func Test_parseTestSpec_malformed_TestSpec_missing_field(t *testing.T) {
 	t.Skip("JSON library makes it cumbersome to implement required fields.")
 	parseTestSpec_expectErr(t, "{}")
 }
+*/
 
+/* skip
 func Test_parseTestSpec_malformed_TestSpec_unknown_field(t *testing.T) {
 	t.Skip("JSON library makes it cumbersome to implement no-unexpected-fields.")
 	parseTestSpec_expectErr(t, "{\"fruit\": \"bananas\"}")
 }
+*/
 
 func Test_parseTestSpec_Transaction_with_value(t *testing.T) {
 	spec := parseTestSpec_expectNoErr(t, `{"transactions": [{"transaction": {"value": 42}}]}`)
