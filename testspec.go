@@ -1,5 +1,8 @@
 package main
 
+import (
+	"math/big"
+)
 
 type TestSpec struct {
 	Transactions []TransactionAssertions
@@ -7,23 +10,23 @@ type TestSpec struct {
 
 type TransactionAssertions struct {
 	Transaction Transaction
-	Assertions Assertions
+	Assertions  Assertions
 }
 
 type Transaction struct {
-	Data []byte
+	Data     []byte
 	GasLimit Gas
 	GasPrice Gas
-	Nonce SeqNum
-	Sender AccountId
-	To AccountId
-	Value Ether
+	Nonce    SeqNum
+	Sender   AccountId
+	To       AccountId
+	Value    Ether
 }
 
-type Gas uint
+type Gas *big.Int
 type SeqNum uint
-type AccountId uint
-type Ether uint
+type AccountId string
+type Ether *big.Int
 
 type Assertions struct {
 	Accounts map[AccountId]AccountAssertion
@@ -31,8 +34,8 @@ type Assertions struct {
 
 type AccountAssertion struct {
 	Balance Ether
-	Code ByteCode
-	Nonce SeqNum
+	Code    ByteCode
+	Nonce   SeqNum
 	Storage map[string]string
 }
 

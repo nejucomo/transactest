@@ -1,7 +1,9 @@
 package main
 
-import "testing"
-
+import (
+	"math/big"
+	"testing"
+)
 
 func Test_parseTestSpec_invalid_json(t *testing.T) {
 	parseTestSpec_expectErr(t, "!")
@@ -23,7 +25,7 @@ func Test_parseTestSpec_Transaction_with_value(t *testing.T) {
 		t.Errorf("Wrong number of TransactionAssertions: %+v\n", spec)
 		return
 	}
-	if spec.Transactions[0].Transaction.Value != 42 {
+	if spec.Transactions[0].Transaction.Value != big.NewInt(42) {
 		t.Errorf("Expected a value of 42: %+v\n", spec)
 		return
 	}
@@ -44,4 +46,3 @@ func parseTestSpec_expectErr(t *testing.T, src string) {
 		t.Errorf("Expected err != nil; found spec == %+v\n", spec)
 	}
 }
-
