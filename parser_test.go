@@ -29,8 +29,10 @@ func Test_parseTestSpec_Transaction_with_value(t *testing.T) {
 		t.Errorf("Wrong number of TransactionAssertions: %+v\n", spec)
 		return
 	}
-	if spec.Transactions[0].Transaction.Value != big.NewInt(42) {
-		t.Errorf("Expected a value of 42: %+v\n", spec)
+	expected := big.NewInt(42)
+	value := spec.Transactions[0].Transaction.Value.AsBigInt()
+	if expected.Cmp(value) != 0 {
+		t.Errorf("Expected transaction Value of %+v, but found %+v\n-in: %+v\n", expected, value, spec)
 		return
 	}
 }
@@ -39,7 +41,7 @@ func Test_parseTestSpec_Transaction_with_value(t *testing.T) {
 func parseTestSpec_expectNoErr(t *testing.T, src string) TestSpec {
 	spec, err := parseTestSpec([]byte(src))
 	if err != nil {
-		t.Errorf("Unexpected parse rror: %+v\n", err)
+		t.Errorf("Unexpected parse error: %+v\n", err)
 	}
 	return spec
 }

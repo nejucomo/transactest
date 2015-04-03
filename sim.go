@@ -50,7 +50,13 @@ func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.L
 
 	origin := keyPair.Address()
 
-	message := helper.NewMessage(origin, []byte(txn.To), txn.Data, txn.Value, txn.GasLimit, txn.GasPrice)
+	message := helper.NewMessage(
+		origin,
+		[]byte(txn.To),
+		txn.Data,
+		txn.Value.AsBigInt(),
+		txn.GasLimit.AsBigInt(),
+		txn.GasPrice.AsBigInt())
 
 	ret, gasLeft, err = core.ApplyMessage(sim, message, coinbase)
 	if core.IsNonceErr(err) || core.IsInvalidTxErr(err) {

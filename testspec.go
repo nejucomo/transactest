@@ -15,18 +15,20 @@ type TransactionAssertions struct {
 
 type Transaction struct {
 	Data     []byte
-	GasLimit Gas
-	GasPrice Gas
+	GasLimit Ether
+	GasPrice Ether
 	Nonce    SeqNum
 	Sender   AccountId
 	To       AccountId
 	Value    Ether
 }
 
-type Gas *big.Int
+type Ether big.Int
+
+func (self *Ether) AsBigInt() *big.Int { return (*big.Int)(self) }
+
 type SeqNum uint
 type AccountId string
-type Ether *big.Int
 
 type Assertions struct {
 	Accounts map[AccountId]AccountAssertion
