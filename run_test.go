@@ -1,26 +1,47 @@
 package main
 
-import "testing"
-
+import (
+	"math/big"
+	"testing"
+)
 
 func Test_TestSpec_run_empty(t *testing.T) {
-	var spec TestSpec = TestSpec{[]TransactionAssertions{}}
+	runTestSpecTest(t, 0, 0, TestSpec{[]TransactionAssertions{}})
+}
 
-	successes, failures, err := runTestSpec(spec)
+func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
+	runTestSpecTest(t, 0, 0,
+		TestSpec{
+			[]TransactionAssertions{
+				TransactionAssertions{
+					Transaction{
+						Data:     []byte{},
+						GasLimit: Ether(*big.NewInt(0)),
+						GasPrice: Ether(*big.NewInt(0)),
+						Nonce:    0,
+						Sender:   "alice",
+						To:       "bob",
+						Value:    Ether(*big.NewInt(42)),
+					},
+					Assertions{},
+				},
+			},
+		})
+}
+
+func runTestSpecTest(t *testing.T, successes, failures uint, spec TestSpec) {
+	s, f, err := runTestSpec(spec)
 
 	if err != nil {
 		t.Errorf("Did not expect this error: %+v\n", err)
 		return
 	}
 
-	if successes != 0 {
-		t.Errorf("Did not expect this successes value: %+v\n", successes)
-		return
-	}
-
-	if failures != 0 {
-		t.Errorf("Did not expect this failures value: %+v\n", failures)
+	if s != successes || f != failures {
+		t.Errorf(
+			"Expected %+v successes, found %+v.\nExpected %+v failures, found %+v.\n",
+			successes, s,
+			failures, f)
 		return
 	}
 }
-
