@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ethereum/go-ethereum/state"
+	"github.com/ethereum/go-ethereum/core/state"
 	"io"
 	"io/ioutil"
 	"log"
