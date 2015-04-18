@@ -19,7 +19,6 @@ type TestSim struct { // implements vm.Enviroment
 	difficulty *big.Int
 	gasLimit   *big.Int
 	gas        *big.Int
-	addrmap    map[AccountId][]byte
 }
 
 const (
@@ -47,7 +46,6 @@ func NewTestSim() (sim TestSim, err error) {
 		difficulty: big.NewInt(0),
 		gasLimit:   big.NewInt(0),
 		gas:        big.NewInt(0),
-		addrmap:    map[AccountId][]byte{},
 	}
 	return
 }
@@ -95,10 +93,5 @@ func (sim *TestSim) getKeyPair(acct AccountId) *crypto.KeyPair {
 }
 
 func (sim *TestSim) getSecretKey(acct AccountId) []byte {
-	skey, ok := sim.addrmap[acct]
-	if !ok {
-		skey = crypto.Sha3([]byte(acct))
-		sim.addrmap[acct] = skey
-	}
-	return skey
+	return crypto.Sha3([]byte(acct))
 }
