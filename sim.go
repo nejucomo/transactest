@@ -19,7 +19,7 @@ type TestSim struct { // implements vm.Enviroment
 	difficulty *big.Int
 	gasLimit   *big.Int
 	gas        *big.Int
-	addrmap    map[AccountId]*common.Address
+	addrmap    map[AccountId][]byte
 }
 
 const (
@@ -47,31 +47,20 @@ func NewTestSim() (sim TestSim, err error) {
 		difficulty: big.NewInt(0),
 		gasLimit:   big.NewInt(0),
 		gas:        big.NewInt(0),
-		addrmap:    map[AccountId]*common.Address{},
+		addrmap:    map[AccountId][]byte{},
 	}
 	return
 }
 
 func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.Logs, gasLeft *big.Int, err error) {
-	var (
-		keyPair *crypto.KeyPair
-	)
-
-	keyPair, err = crypto.NewKeyPairFromSec([]byte("FIXME stub secret"))
-	if err != nil {
-		return
-	}
-
 	snapshot := sim.statedb.Copy()
 
 	// Note these need to update per-block when we add multiblock tests:
 	coinbase := sim.statedb.GetOrNewStateObject(*sim.getAddress(COINBASE))
 	coinbase.SetGasPool(sim.gasLimit)
 
-	origin := common.BytesToAddress(keyPair.Address())
-
 	message := helper.NewMessage(
-		origin,
+		*sim.getAddress(ORIGIN),
 		sim.getAddress(txn.To),
 		txn.Data,
 		txn.Value.AsBigInt(),
@@ -93,11 +82,23 @@ func (sim *TestSim) checkAssertions(as *Assertions, result []byte, logs state.Lo
 }
 
 func (sim *TestSim) getAddress(acct AccountId) *common.Address {
-	addr, ok := sim.addrmap[acct]
-	if !ok {
-		t := common.BytesToAddress([]byte(acct))
-		addr = &t
-		sim.addrmap[acct] = addr
+	addr := common.BytesToAddress(sim.getKeyPair(acct).Address())
+	return &addr
+}
+
+func (sim *TestSim) getKeyPair(acct AccountId) *crypto.KeyPair {
+	kp, err := crypto.NewKeyPairFromSec(sim.getSecretKey(acct))
+	if err != nil {
+		panic(err)
 	}
-	return addr
+	return kp
+}
+
+func (sim *TestSim) getSecretKey(acct AccountId) []byte {
+	skey, ok := sim.addrmap[acct]
+	if !ok {
+		skey = crypto.Sha3([]byte(acct))
+		sim.addrmap[acct] = skey
+	}
+	return skey
 }
