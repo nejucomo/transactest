@@ -8,10 +8,12 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/tests/helper"
+	"log"
 	"math/big"
 )
 
 type TestSim struct { // implements vm.Enviroment
+	memdb      *ethdb.MemDatabase
 	statedb    *state.StateDB
 	blocknum   *big.Int
 	blockhash  common.Hash
@@ -39,6 +41,7 @@ func NewTestSim() (sim TestSim, err error) {
 
 	// FIXME: Handle many dummy values better:
 	sim = TestSim{
+		memdb:      memdb,
 		statedb:    statedb,
 		blocknum:   big.NewInt(0),
 		blockhash:  common.BytesToHash(nil),
@@ -48,6 +51,20 @@ func NewTestSim() (sim TestSim, err error) {
 		gas:        big.NewInt(0),
 	}
 	return
+}
+
+func (sim *TestSim) initAccount(acct *Account) {
+	addr := sim.getAddress(acct.Id)
+	log.Printf("Initializing account %+v: %+v\n", addr.Hex(), acct)
+
+	obj := state.NewStateObject(*addr, sim.memdb)
+	obj.SetBalance(acct.Balance.AsBigInt())
+
+	if acct.ContractState != nil {
+		// BUG: What about Storage?
+		obj.SetCode([]byte(acct.ContractState.Code))
+	}
+	sim.statedb.SetStateObject(obj)
 }
 
 func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.Logs, gasLeft *big.Int, err error) {

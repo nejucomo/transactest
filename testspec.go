@@ -5,7 +5,19 @@ import (
 )
 
 type TestSpec struct {
+	Accounts     []Account
 	Transactions []TransactionAssertions
+}
+
+type Account struct {
+	Id            AccountId
+	Balance       Ether
+	ContractState *ContractState
+}
+
+type ContractState struct {
+	Code    string
+	Storage map[string]string
 }
 
 type TransactionAssertions struct {

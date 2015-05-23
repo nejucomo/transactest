@@ -40,6 +40,10 @@ func runTestSpec(spec TestSpec) (successes uint, failures uint, err error) {
 		return
 	}
 
+	for _, acc := range spec.Accounts {
+		sim.initAccount(&acc)
+	}
+
 	for _, ta := range spec.Transactions {
 		var (
 			result  []byte

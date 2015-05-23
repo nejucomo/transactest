@@ -6,18 +6,25 @@ import (
 )
 
 func Test_TestSpec_run_empty(t *testing.T) {
-	runTestSpecTest(t, 0, 0, TestSpec{[]TransactionAssertions{}})
+	runTestSpecTest(t, 0, 0, TestSpec{[]Account{}, []TransactionAssertions{}})
 }
 
 func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 	runTestSpecTest(t, 0, 0,
 		TestSpec{
+			[]Account{
+				Account{
+					Id:            "alice",
+					Balance:       Ether(*big.NewInt(10000)),
+					ContractState: nil,
+				},
+			},
 			[]TransactionAssertions{
 				TransactionAssertions{
 					Transaction{
 						Data:     []byte{},
-						GasLimit: Ether(*big.NewInt(0)),
-						GasPrice: Ether(*big.NewInt(0)),
+						GasLimit: Ether(*big.NewInt(123)),
+						GasPrice: Ether(*big.NewInt(3)),
 						Nonce:    0,
 						Sender:   "alice",
 						To:       "bob",
