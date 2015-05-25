@@ -13,6 +13,7 @@ type Account struct {
 	Id            AccountId
 	Balance       Ether
 	ContractState *ContractState
+	Nonce         SeqNum
 }
 
 type ContractState struct {
@@ -39,7 +40,7 @@ type Ether big.Int
 
 func (self *Ether) AsBigInt() *big.Int { return (*big.Int)(self) }
 
-type SeqNum uint
+type SeqNum uint64
 type AccountId string
 
 type Assertions struct {

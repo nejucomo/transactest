@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ethereum/go-ethereum/params"
 	"math/big"
 	"testing"
 )
@@ -15,7 +16,7 @@ func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 			[]Account{
 				Account{
 					Id:            "alice",
-					Balance:       Ether(*big.NewInt(10000)),
+					Balance:       Ether(*big.NewInt(12345678)),
 					ContractState: nil,
 				},
 			},
@@ -23,7 +24,7 @@ func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 				TransactionAssertions{
 					Transaction{
 						Data:     []byte{},
-						GasLimit: Ether(*big.NewInt(123)),
+						GasLimit: Ether(*addBigInts(big.NewInt(1234), params.TxGas)),
 						GasPrice: Ether(*big.NewInt(3)),
 						Nonce:    0,
 						Sender:   "alice",
@@ -51,4 +52,16 @@ func runTestSpecTest(t *testing.T, successes, failures uint, spec TestSpec) {
 			failures, f)
 		return
 	}
+}
+
+func addBigInts(a, b *big.Int) *big.Int {
+	/* This is terrible in a few ways:
+		 * - Can't find a functional api for addition, so we're writing
+		 *   this one.
+	     * - Inefficient.
+	     * - Pointer API impedance mismatch.
+	*/
+	sum := big.NewInt(0)
+	sum.Add(a, b)
+	return sum
 }

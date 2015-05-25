@@ -2,11 +2,13 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/tests/helper"
 	"log"
 	"math/big"
@@ -21,6 +23,7 @@ type TestSim struct { // implements vm.Enviroment
 	difficulty *big.Int
 	gasLimit   *big.Int
 	gas        *big.Int
+	noncemap   map[AccountId]SeqNum
 }
 
 const (
@@ -46,9 +49,10 @@ func NewTestSim() (sim TestSim, err error) {
 		blocknum:   big.NewInt(0),
 		blockhash:  common.BytesToHash(nil),
 		time:       0,
-		difficulty: big.NewInt(0),
-		gasLimit:   big.NewInt(0),
-		gas:        big.NewInt(0),
+		difficulty: params.GenesisDifficulty, // FIXME: allow tests to specify.
+		gasLimit:   params.GenesisGasLimit,   // FIXME: allow tests to specify.
+		gas:        big.NewInt(9876),         // FIXME: determine purpose of this and fix it.
+		noncemap:   map[AccountId]SeqNum{},
 	}
 	return
 }
@@ -65,6 +69,8 @@ func (sim *TestSim) initAccount(acct *Account) {
 		obj.SetCode([]byte(acct.ContractState.Code))
 	}
 	sim.statedb.SetStateObject(obj)
+
+	sim.noncemap[acct.Id] = acct.Nonce
 }
 
 func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.Logs, gasLeft *big.Int, err error) {
@@ -75,12 +81,13 @@ func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.L
 	coinbase.SetGasPool(sim.gasLimit)
 
 	message := helper.NewMessage(
-		*sim.getAddress(ORIGIN),
+		*sim.getAddress(txn.Sender),
 		sim.getAddress(txn.To),
 		txn.Data,
 		txn.Value.AsBigInt(),
 		txn.GasLimit.AsBigInt(),
-		txn.GasPrice.AsBigInt())
+		txn.GasPrice.AsBigInt(),
+		uint64(sim.getSenderNonce(txn.Sender)))
 
 	ret, gasLeft, err = core.ApplyMessage(sim, message, coinbase)
 	if core.IsNonceErr(err) || core.IsInvalidTxErr(err) {
@@ -111,4 +118,12 @@ func (sim *TestSim) getKeyPair(acct AccountId) *crypto.KeyPair {
 
 func (sim *TestSim) getSecretKey(acct AccountId) []byte {
 	return crypto.Sha3([]byte(acct))
+}
+
+func (sim *TestSim) getSenderNonce(acct AccountId) SeqNum {
+	nonce, ok := sim.noncemap[acct]
+	if !ok {
+		panic(fmt.Sprintf("Unknown acct %+v in TestSim.GetSenderNonce", acct))
+	}
+	return nonce
 }
