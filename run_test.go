@@ -31,7 +31,23 @@ func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 						To:       "bob",
 						Value:    Ether(*big.NewInt(42)),
 					},
-					Assertions{},
+					Assertions{
+						// Bug: What about gas costs?
+						map[AccountId]AccountAssertion{
+							"alice": AccountAssertion{
+								Balance: Ether(*big.NewInt(12345678 - 42)),
+								Code:    nil,
+								Nonce:   1,
+								Storage: nil,
+							},
+							"bob": AccountAssertion{
+								Balance: Ether(*big.NewInt(42)),
+								Code:    nil,
+								Nonce:   0,
+								Storage: nil,
+							},
+						},
+					},
 				},
 			},
 		})
