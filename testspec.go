@@ -37,9 +37,11 @@ type Transaction struct {
 	Value    Ether
 }
 
-type Ether big.Int
+type Ether struct {
+	i *big.Int
+}
 
-func (self *Ether) AsBigInt() *big.Int { return (*big.Int)(self) }
+func (self *Ether) AsBigInt() *big.Int { return self.i }
 
 type SeqNum uint64
 type AccountId string

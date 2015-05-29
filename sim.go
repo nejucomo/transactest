@@ -9,7 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/tests/helper"
-	"log"
 	"math/big"
 )
 
@@ -58,7 +57,6 @@ func NewTestSim() (sim TestSim, err error) {
 
 func (sim *TestSim) initAccount(acct *Account) {
 	addr := sim.getAddress(acct.Id)
-	log.Printf("Initializing account %+v: %+v\n", addr.Hex(), acct)
 
 	obj := state.NewStateObject(*addr, sim.memdb)
 	obj.SetBalance(acct.Balance.AsBigInt())

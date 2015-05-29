@@ -8,6 +8,24 @@ type Results struct {
 	rs []Result
 }
 
+func (self *Results) Print(all bool, label string) {
+	fmt.Printf("Results for %+v:\n", label)
+	for _, r := range self.rs {
+		var tag string
+		if r.ok {
+			tag = "pass"
+		} else {
+			tag = "FAIL"
+		}
+
+		if all || !r.ok {
+			fmt.Printf("  %s - %s\n", tag, r.String())
+		}
+	}
+	s, f := self.Counts()
+	fmt.Printf("  Successes %+v, Failures %+v\n", s, f)
+}
+
 func (self *Results) Record(ok bool, format string, arguments ...interface{}) {
 	self.rs = append(self.rs, Result{ok, format, arguments})
 }
@@ -21,10 +39,6 @@ func (self *Results) Counts() (successes, failures uint) {
 		}
 	}
 	return
-}
-
-func (self *Results) Slice() []Result {
-	return self.rs
 }
 
 type Result struct {

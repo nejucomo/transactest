@@ -14,7 +14,7 @@ func (self *Ether) UnmarshalJSON(data []byte) error {
 
 	err := i.UnmarshalJSON(data)
 	if err == nil {
-		*self = Ether(i)
+		*self = Ether{&i}
 	}
 	return err
 }
