@@ -97,24 +97,30 @@ func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.L
 	return
 }
 
-func (sim *TestSim) checkAssertions(as *Assertions, result []byte, logs state.Logs, gasleft *big.Int) (successes uint, failures uint, err error) {
+func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) {
 	for acct, aa := range as.Accounts {
 		stob := sim.statedb.GetOrNewStateObject(*sim.getAddress(acct))
-		if aa.Balance.AsBigInt() == stob.Balance() {
-			successes += 1
-		} else {
-			failures += 1
-		}
-		if bytesEq(aa.Code, stob.Code()) {
-			successes += 1
-		} else {
-			failures += 1
-		}
-		if uint64(aa.Nonce) == stob.Nonce() {
-			successes += 1
-		} else {
-			failures += 1
-		}
+
+		assertionresults.Record(
+			aa.Balance.AsBigInt() == stob.Balance(),
+			"Account %+v - Balance: expected %+v vs actual %+v",
+			acct,
+			aa.Balance.AsBigInt(),
+			stob.Balance())
+
+		assertionresults.Record(
+			bytesEq(aa.Code, stob.Code()),
+			"Account %+v - Code: expected %+v vs actual %+v",
+			acct,
+			aa.Code,
+			stob.Code())
+
+		assertionresults.Record(
+			uint64(aa.Nonce) == stob.Nonce(),
+			"Account %+v - Nonce: expected %+v vs actual %+v",
+			acct,
+			aa.Nonce,
+			stob.Nonce())
 
 		/* API BUG: the test specifier may want to express "all
 		 * of the following keys must exist with the given values"
@@ -122,14 +128,24 @@ func (sim *TestSim) checkAssertions(as *Assertions, result []byte, logs state.Lo
 		 */
 		for key, expected := range aa.Storage {
 			actual, ok := stob.Storage()[key]
-			if ok && expected.Cmp(actual) {
-				successes += 1
+
+			var actualdesc string
+
+			if ok {
+				actualdesc = fmt.Sprintf("%+v", ok)
 			} else {
-				failures += 1
+				actualdesc = "<missing>"
 			}
+
+			assertionresults.Record(
+				ok && expected.Cmp(actual),
+				"Account %+v - Storage %+v: expected %+v vs actual %+v",
+				acct,
+				key,
+				expected,
+				actualdesc)
 		}
 	}
-	return
 }
 
 func (sim *TestSim) getAddress(acct AccountId) *common.Address {

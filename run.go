@@ -9,30 +9,26 @@ import (
 	"os"
 )
 
-func runPath(p string) {
+func runPath(p string) (results Results, err error) {
 	f, err := os.Open(p)
 	checkErr(err)
-	runReader(f)
+	return runReader(f)
 }
 
-func runReader(r io.Reader) {
+func runReader(r io.Reader) (results Results, err error) {
 	data, err := ioutil.ReadAll(r)
 	checkErr(err)
-	runBytes(data)
+	return runBytes(data)
 }
 
-func runBytes(data []byte) {
+func runBytes(data []byte) (results Results, err error) {
 	spec, err := parseTestSpec(data)
 	checkErr(err)
 
-	runTestSpec(spec)
+	return runTestSpec(spec)
 }
 
-func runTestSpec(spec TestSpec) (successes uint, failures uint, err error) {
-	successes = 0
-	failures = 0
-	err = nil
-
+func runTestSpec(spec TestSpec) (results Results, err error) {
 	var sim TestSim
 
 	sim, err = NewTestSim()
@@ -55,15 +51,7 @@ func runTestSpec(spec TestSpec) (successes uint, failures uint, err error) {
 			return
 		}
 
-		var s, f uint
-
-		s, f, err = sim.checkAssertions(&ta.Assertions, result, logs, gasleft)
-		if err != nil {
-			return
-		}
-
-		successes += s
-		failures += f
+		sim.checkAssertions(&results, &ta.Assertions, result, logs, gasleft)
 	}
 
 	return

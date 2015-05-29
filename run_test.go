@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ethereum/go-ethereum/params"
 	"math/big"
 	"testing"
@@ -11,7 +12,7 @@ func Test_TestSpec_run_empty(t *testing.T) {
 }
 
 func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
-	runTestSpecTest(t, 8, 0,
+	runTestSpecTest(t, 6, 0,
 		TestSpec{
 			[]Account{
 				Account{
@@ -54,11 +55,25 @@ func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 }
 
 func runTestSpecTest(t *testing.T, successes, failures uint, spec TestSpec) {
-	s, f, err := runTestSpec(spec)
+	results, err := runTestSpec(spec)
 
 	if err != nil {
 		t.Errorf("Did not expect this error: %+v\n", err)
 		return
+	}
+
+	s, f := results.Counts()
+
+	fmt.Printf("Results: %+v successes and %+v failures\n", s, f)
+	for _, r := range results.Slice() {
+		var tag string
+		if r.Ok() {
+			tag = "pass"
+		} else {
+			tag = "FAIL"
+		}
+
+		fmt.Printf("  %s - %s\n", tag, r.String())
 	}
 
 	if s != successes || f != failures {
