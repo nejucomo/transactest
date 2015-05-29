@@ -99,7 +99,10 @@ func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.L
 }
 
 func (sim *TestSim) checkAssertions(as *Assertions, result []byte, logs state.Logs, gasleft *big.Int) (successes uint, failures uint, err error) {
-	err = errors.New("Not Implemented.")
+	for acct, aa := range as.Accounts {
+		err = errors.New(fmt.Sprintf("Not Implemented: acct %+v, aa %+v\n", acct, aa))
+		return
+	}
 	return
 }
 
