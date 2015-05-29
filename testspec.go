@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ethereum/go-ethereum/core/state"
 	"math/big"
 )
 
@@ -18,7 +19,7 @@ type Account struct {
 
 type ContractState struct {
 	Code    string
-	Storage map[string]string
+	Storage state.Storage
 }
 
 type TransactionAssertions struct {
@@ -51,7 +52,7 @@ type AccountAssertion struct {
 	Balance Ether
 	Code    ByteCode
 	Nonce   SeqNum
-	Storage map[string]string
+	Storage state.Storage
 }
 
 type ByteCode []byte

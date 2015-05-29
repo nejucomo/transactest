@@ -11,7 +11,7 @@ func Test_TestSpec_run_empty(t *testing.T) {
 }
 
 func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
-	runTestSpecTest(t, 0, 0,
+	runTestSpecTest(t, 8, 0,
 		TestSpec{
 			[]Account{
 				Account{
@@ -68,16 +68,4 @@ func runTestSpecTest(t *testing.T, successes, failures uint, spec TestSpec) {
 			failures, f)
 		return
 	}
-}
-
-func addBigInts(a, b *big.Int) *big.Int {
-	/* This is terrible in a few ways:
-		 * - Can't find a functional api for addition, so we're writing
-		 *   this one.
-	     * - Inefficient.
-	     * - Pointer API impedance mismatch.
-	*/
-	sum := big.NewInt(0)
-	sum.Add(a, b)
-	return sum
 }

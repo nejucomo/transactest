@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -100,8 +99,35 @@ func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.L
 
 func (sim *TestSim) checkAssertions(as *Assertions, result []byte, logs state.Logs, gasleft *big.Int) (successes uint, failures uint, err error) {
 	for acct, aa := range as.Accounts {
-		err = errors.New(fmt.Sprintf("Not Implemented: acct %+v, aa %+v\n", acct, aa))
-		return
+		stob := sim.statedb.GetOrNewStateObject(*sim.getAddress(acct))
+		if aa.Balance.AsBigInt() == stob.Balance() {
+			successes += 1
+		} else {
+			failures += 1
+		}
+		if bytesEq(aa.Code, stob.Code()) {
+			successes += 1
+		} else {
+			failures += 1
+		}
+		if uint64(aa.Nonce) == stob.Nonce() {
+			successes += 1
+		} else {
+			failures += 1
+		}
+
+		/* API BUG: the test specifier may want to express "all
+		 * of the following keys must exist with the given values"
+		 * or they may want "only the following keys...".
+		 */
+		for key, expected := range aa.Storage {
+			actual, ok := stob.Storage()[key]
+			if ok && expected.Cmp(actual) {
+				successes += 1
+			} else {
+				failures += 1
+			}
+		}
 	}
 	return
 }
