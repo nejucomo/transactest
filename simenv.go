@@ -19,26 +19,26 @@ func (sim *TestSim) Difficulty() *big.Int         { return sim.difficulty }
 func (sim *TestSim) GasLimit() *big.Int           { return sim.gasLimit }
 
 func (sim *TestSim) Transfer(from, to vm.Account, amount *big.Int) error {
-	not_implemented("TestSim<%#v>.Transfer(\n  from %#v,\n  to %#v,\n  amount %#v\n  )", from, to, amount)
+	not_implemented("<\n  %#v\n>.Transfer(\n  from %#v,\n  to %#v,\n  amount %#v\n  )", from, to, amount)
 	return nil
 }
 
 func (sim *TestSim) AddLog(log *state.Log) {
-	not_implemented("TestSim<%#v>.AddLog(log %#v)", sim, log)
+	not_implemented("<\n  %#v\n>.AddLog(log %#v)", sim, log)
 }
 
 func (sim *TestSim) VmType() vm.Type {
-	not_implemented("TestSim<%#v>.VmType()", sim)
+	not_implemented("<\n  %#v\n>.VmType()", sim)
 	return vm.StdVmTy
 }
 
 func (sim *TestSim) Depth() int {
-	not_implemented("TestSim<%#v>.Depth()", sim)
+	not_implemented("<\n  %#v\n>.Depth()", sim)
 	return 0
 }
 
 func (sim *TestSim) SetDepth(i int) {
-	not_implemented("TestSim<%#v>.SetDepth(i %#v)", sim, i)
+	not_implemented("<\n  %#v\n>.SetDepth(i %#v)", sim, i)
 	return
 }
 
@@ -50,11 +50,11 @@ func (sim *TestSim) Call(caller vm.ContextRef, addr common.Address, data []byte,
 }
 
 func (sim *TestSim) CallCode(caller vm.ContextRef, addr common.Address, data []byte, gas, price, value *big.Int) ([]byte, error) {
-	not_implemented("TestSim<%#v>.CallCode(\n  caller %#v,\n  addr %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, addr, data, gas, price, value)
+	not_implemented("<\n  %#v\n>.CallCode(\n  caller %#v,\n  addr %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, addr, data, gas, price, value)
 	return nil, nil
 }
 
 func (sim *TestSim) Create(caller vm.ContextRef, data []byte, gas, price, value *big.Int) ([]byte, error, vm.ContextRef) {
-	not_implemented("TestSim<%#v>.Create(\n  caller %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, data, gas, price, value)
+	not_implemented("<\n  %#v\n>.Create(\n  caller %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, data, gas, price, value)
 	return nil, nil, nil
 }
