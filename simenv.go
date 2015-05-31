@@ -24,21 +24,21 @@ func (sim *TestSim) Transfer(from, to vm.Account, amount *big.Int) error {
 }
 
 func (sim *TestSim) AddLog(log *state.Log) {
-	not_implemented("TestSim<%#v>.AddLog(log %#v)", log)
+	not_implemented("TestSim<%#v>.AddLog(log %#v)", sim, log)
 }
 
 func (sim *TestSim) VmType() vm.Type {
-	not_implemented("TestSim<%#v>.VmType()")
+	not_implemented("TestSim<%#v>.VmType()", sim)
 	return vm.StdVmTy
 }
 
 func (sim *TestSim) Depth() int {
-	not_implemented("TestSim<%#v>.Depth()")
+	not_implemented("TestSim<%#v>.Depth()", sim)
 	return 0
 }
 
 func (sim *TestSim) SetDepth(i int) {
-	not_implemented("TestSim<%#v>.SetDepth(i %#v)", i)
+	not_implemented("TestSim<%#v>.SetDepth(i %#v)", sim, i)
 	return
 }
 
