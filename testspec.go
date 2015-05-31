@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ethereum/go-ethereum/core/state"
 	"math/big"
 )
@@ -41,7 +42,8 @@ type Ether struct {
 	i *big.Int
 }
 
-func (self *Ether) AsBigInt() *big.Int { return self.i }
+func (self Ether) Format(f fmt.State, c rune) { fmt.Fprintf(f, "%+v", self.i) }
+func (self *Ether) AsBigInt() *big.Int        { return self.i }
 
 type SeqNum uint64
 type AccountId string
