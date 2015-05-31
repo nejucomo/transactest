@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/state"
@@ -20,17 +19,28 @@ func (sim *TestSim) Difficulty() *big.Int         { return sim.difficulty }
 func (sim *TestSim) GasLimit() *big.Int           { return sim.gasLimit }
 
 func (sim *TestSim) Transfer(from, to vm.Account, amount *big.Int) error {
-	// FIXME stub
+	not_implemented("TestSim<%#v>.Transfer(\n  from %#v,\n  to %#v,\n  amount %#v\n  )", from, to, amount)
 	return nil
 }
 
-func (sim *TestSim) AddLog(*state.Log) {
-	// FIXME stub
+func (sim *TestSim) AddLog(log *state.Log) {
+	not_implemented("TestSim<%#v>.AddLog(log %#v)", log)
 }
 
-func (sim *TestSim) VmType() vm.Type { return vm.StdVmTy } // FIXME stub
-func (sim *TestSim) Depth() int      { return 0 }          // FIXME stub
-func (sim *TestSim) SetDepth(i int)  { return }            // FIXME stub
+func (sim *TestSim) VmType() vm.Type {
+	not_implemented("TestSim<%#v>.VmType()")
+	return vm.StdVmTy
+}
+
+func (sim *TestSim) Depth() int {
+	not_implemented("TestSim<%#v>.Depth()")
+	return 0
+}
+
+func (sim *TestSim) SetDepth(i int) {
+	not_implemented("TestSim<%#v>.SetDepth(i %#v)", i)
+	return
+}
 
 func (sim *TestSim) Call(caller vm.ContextRef, addr common.Address, data []byte, gas, price, value *big.Int) ([]byte, error) {
 	exec := core.NewExecution(sim, &addr, data, gas, price, value)
@@ -40,11 +50,11 @@ func (sim *TestSim) Call(caller vm.ContextRef, addr common.Address, data []byte,
 }
 
 func (sim *TestSim) CallCode(caller vm.ContextRef, addr common.Address, data []byte, gas, price, value *big.Int) ([]byte, error) {
-	// FIXME stub
-	return nil, errors.New("Not Implemented.")
+	not_implemented("TestSim<%#v>.CallCode(\n  caller %#v,\n  addr %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, addr, data, gas, price, value)
+	return nil, nil
 }
 
 func (sim *TestSim) Create(caller vm.ContextRef, data []byte, gas, price, value *big.Int) ([]byte, error, vm.ContextRef) {
-	// FIXME stub
-	return nil, errors.New("Not Implemented."), nil
+	not_implemented("TestSim<%#v>.Create(\n  caller %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, data, gas, price, value)
+	return nil, nil, nil
 }

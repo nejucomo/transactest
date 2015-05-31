@@ -4,8 +4,15 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"math/big"
 )
+
+func not_implemented(tmpl string, arguments ...interface{}) {
+	msg := fmt.Sprintf(tmpl, arguments...)
+	log.Fatalf("NOT IMPLEMENTED: %s\n", msg)
+}
 
 func bytesEq(a, b []byte) bool {
 	if a == nil && b == nil {
