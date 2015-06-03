@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -109,7 +110,7 @@ func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, a
 			stob.Balance())
 
 		assertionresults.Record(
-			bytesEq(aa.Code, stob.Code()),
+			bytes.Compare(aa.Code, stob.Code()) == 0,
 			"Account %+v - Code: expected %+v vs actual %+v",
 			acct,
 			aa.Code,
