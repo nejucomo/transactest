@@ -15,13 +15,14 @@ import (
 type TestSim struct { // implements vm.Enviroment
 	memdb      *ethdb.MemDatabase
 	statedb    *state.StateDB
+	noncemap   map[AccountId]SeqNum
 	blocknum   *big.Int
 	blockhash  common.Hash
 	time       int64
+	depth      int
 	difficulty *big.Int
 	gasLimit   *big.Int
 	gas        *big.Int
-	noncemap   map[AccountId]SeqNum
 }
 
 const (
@@ -44,13 +45,14 @@ func NewTestSim() (sim TestSim, err error) {
 	sim = TestSim{
 		memdb:      memdb,
 		statedb:    statedb,
+		noncemap:   map[AccountId]SeqNum{},
 		blocknum:   big.NewInt(0),
 		blockhash:  common.BytesToHash(nil),
 		time:       0,
+		depth:      0,
 		difficulty: params.GenesisDifficulty, // FIXME: allow tests to specify.
 		gasLimit:   params.GenesisGasLimit,   // FIXME: allow tests to specify.
 		gas:        big.NewInt(9876),         // FIXME: determine purpose of this and fix it.
-		noncemap:   map[AccountId]SeqNum{},
 	}
 	return
 }
@@ -100,7 +102,7 @@ func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, a
 		stob := sim.statedb.GetOrNewStateObject(*sim.getAddress(acct))
 
 		assertionresults.Record(
-			aa.Balance.AsBigInt() == stob.Balance(),
+			aa.Balance.AsBigInt().Cmp(stob.Balance()) == 0,
 			"Account %+v - Balance: expected %+v vs actual %+v",
 			acct,
 			aa.Balance.AsBigInt(),

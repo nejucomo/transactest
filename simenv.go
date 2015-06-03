@@ -19,28 +19,16 @@ func (sim *TestSim) Difficulty() *big.Int         { return sim.difficulty }
 func (sim *TestSim) GasLimit() *big.Int           { return sim.gasLimit }
 
 func (sim *TestSim) Transfer(from, to vm.Account, amount *big.Int) error {
-	not_implemented("<\n  %#v\n>.Transfer(\n  from %#v,\n  to %#v,\n  amount %#v\n  )", from, to, amount)
-	return nil
+	return vm.Transfer(from, to, amount)
 }
 
 func (sim *TestSim) AddLog(log *state.Log) {
 	not_implemented("<\n  %#v\n>.AddLog(log %#v)", sim, log)
 }
 
-func (sim *TestSim) VmType() vm.Type {
-	not_implemented("<\n  %#v\n>.VmType()", sim)
-	return vm.StdVmTy
-}
-
-func (sim *TestSim) Depth() int {
-	not_implemented("<\n  %#v\n>.Depth()", sim)
-	return 0
-}
-
-func (sim *TestSim) SetDepth(i int) {
-	not_implemented("<\n  %#v\n>.SetDepth(i %#v)", sim, i)
-	return
-}
+func (sim *TestSim) VmType() vm.Type { return vm.StdVmTy }
+func (sim *TestSim) Depth() int      { return sim.depth }
+func (sim *TestSim) SetDepth(i int)  { sim.depth = i }
 
 func (sim *TestSim) Call(caller vm.ContextRef, addr common.Address, data []byte, gas, price, value *big.Int) ([]byte, error) {
 	exec := core.NewExecution(sim, &addr, data, gas, price, value)
