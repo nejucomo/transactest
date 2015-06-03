@@ -6,7 +6,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/big"
 )
 
 func not_implemented(tmpl string, arguments ...interface{}) {
@@ -33,16 +32,4 @@ func bytesEq(a, b []byte) bool {
 		}
 	}
 	return true
-}
-
-func addBigInts(a, b *big.Int) *big.Int {
-	/* This is terrible in a few ways:
-		 * - Can't find a functional api for addition, so we're writing
-		 *   this one.
-	     * - Inefficient.
-	     * - Pointer API impedance mismatch.
-	*/
-	sum := big.NewInt(0)
-	sum.Add(a, b)
-	return sum
 }

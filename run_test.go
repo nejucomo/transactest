@@ -11,12 +11,20 @@ func Test_TestSpec_run_empty(t *testing.T) {
 }
 
 func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
+	var (
+		startbal int64 = 12345678
+		xferamt  int64 = 42
+		gprice   int64 = 3
+	)
+
+	txgas := params.TxGas.Int64()
+
 	runTestSpecTest(t, 6, 0,
 		TestSpec{
 			[]Account{
 				Account{
 					Id:            "alice",
-					Balance:       Ether{big.NewInt(12345678)},
+					Balance:       Ether{big.NewInt(startbal)},
 					ContractState: nil,
 				},
 			},
@@ -24,24 +32,24 @@ func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 				TransactionAssertions{
 					Transaction{
 						Data:     []byte{},
-						GasLimit: Ether{addBigInts(big.NewInt(1234), params.TxGas)},
-						GasPrice: Ether{big.NewInt(3)},
+						GasLimit: Ether{params.TxGas},
+						GasPrice: Ether{big.NewInt(gprice)},
 						Nonce:    0,
 						Sender:   "alice",
 						To:       "bob",
-						Value:    Ether{big.NewInt(42)},
+						Value:    Ether{big.NewInt(xferamt)},
 					},
 					Assertions{
 						// Bug: What about gas costs?
 						map[AccountId]AccountAssertion{
 							"alice": AccountAssertion{
-								Balance: Ether{big.NewInt(12345678 - 42)},
+								Balance: Ether{big.NewInt(startbal - xferamt - gprice*txgas)},
 								Code:    nil,
 								Nonce:   1,
 								Storage: nil,
 							},
 							"bob": AccountAssertion{
-								Balance: Ether{big.NewInt(42)},
+								Balance: Ether{big.NewInt(xferamt)},
 								Code:    nil,
 								Nonce:   0,
 								Storage: nil,
