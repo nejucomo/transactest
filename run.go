@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/nejucomo/transactest/results"
+	"github.com/nejucomo/transactest/report"
 	"github.com/nejucomo/transactest/testspec"
 	"io"
 	"io/ioutil"
@@ -11,26 +11,26 @@ import (
 	"os"
 )
 
-func runPath(p string) (results results.Results, err error) {
+func runPath(p string) (results report.Report, err error) {
 	f, err := os.Open(p)
 	checkErr(err)
 	return runReader(f)
 }
 
-func runReader(r io.Reader) (results results.Results, err error) {
+func runReader(r io.Reader) (results report.Report, err error) {
 	data, err := ioutil.ReadAll(r)
 	checkErr(err)
 	return runBytes(data)
 }
 
-func runBytes(data []byte) (results results.Results, err error) {
+func runBytes(data []byte) (results report.Report, err error) {
 	spec, err := testspec.Parse(data)
 	checkErr(err)
 
 	return runTestSpec(spec)
 }
 
-func runTestSpec(spec testspec.TestSpec) (results results.Results, err error) {
+func runTestSpec(spec testspec.TestSpec) (results report.Report, err error) {
 	var sim TestSim
 
 	sim, err = NewTestSim()

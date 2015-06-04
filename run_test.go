@@ -67,16 +67,16 @@ func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 }
 
 func runTestSpecTest(t *testing.T, successes, failures uint, spec testspec.TestSpec) {
-	results, err := runTestSpec(spec)
+	report, err := runTestSpec(spec)
 
 	if err != nil {
 		t.Errorf("Did not expect this error: %+v\n", err)
 		return
 	}
 
-	s, f := results.Counts()
+	s, f := report.Counts()
 
-	results.Print(true, "self test")
+	report.Print(true, "self test")
 
 	if s != successes || f != failures {
 		t.Errorf(

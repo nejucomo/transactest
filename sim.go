@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/tests/helper"
 	"github.com/nejucomo/transactest/assert"
-	"github.com/nejucomo/transactest/results"
+	"github.com/nejucomo/transactest/report"
 	"github.com/nejucomo/transactest/testspec"
 	"math/big"
 )
@@ -107,11 +107,11 @@ func (sim *TestSim) applyTransaction(txn *testspec.Transaction) (ret []byte, log
 	return
 }
 
-func (sim *TestSim) checkAssertions(assertionresults *results.Results, as *testspec.Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
+func (sim *TestSim) checkAssertions(report *report.Report, as *testspec.Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
 	for acct, aa := range as.Accounts {
 		stob := sim.statedb.GetOrNewStateObject(*sim.getAddress(acct))
 
-		assertionresults.Record(
+		report.Record(
 			aa.Balance.AsBigInt().Cmp(stob.Balance()) == 0,
 			"Account %+v - Balance: expected %+v vs actual %+v",
 			acct,
@@ -127,14 +127,14 @@ func (sim *TestSim) checkAssertions(assertionresults *results.Results, as *tests
 			return err
 		}
 
-		assertionresults.Record(
+		report.Record(
 			bytes.Compare(code, stob.Code()) == 0,
 			"Account %+v - Code: expected %+v vs actual %+v",
 			acct,
 			aa.Code,
 			stob.Code())
 
-		assertionresults.Record(
+		report.Record(
 			uint64(aa.Nonce) == stob.Nonce(),
 			"Account %+v - Nonce: expected %+v vs actual %+v",
 			acct,
@@ -156,7 +156,7 @@ func (sim *TestSim) checkAssertions(assertionresults *results.Results, as *tests
 				actualdesc = "<missing>"
 			}
 
-			assertionresults.Record(
+			report.Record(
 				ok && expected.Cmp(actual),
 				"Account %+v - Storage %+v: expected %+v vs actual %+v",
 				acct,
