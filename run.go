@@ -23,7 +23,7 @@ func runReader(r io.Reader) (results Results, err error) {
 }
 
 func runBytes(data []byte) (results Results, err error) {
-	spec, err := parseTestSpec(data)
+	spec, err := testspec.Parse(data)
 	checkErr(err)
 
 	return runTestSpec(spec)

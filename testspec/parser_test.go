@@ -1,7 +1,6 @@
-package main
+package testspec
 
 import (
-	"github.com/nejucomo/transactest/testspec"
 	"math/big"
 	"testing"
 )
@@ -39,7 +38,7 @@ func Test_parseTestSpec_Transaction_with_value(t *testing.T) {
 }
 
 // Helper code:
-func parseTestSpec_expectNoErr(t *testing.T, src string) testspec.TestSpec {
+func parseTestSpec_expectNoErr(t *testing.T, src string) TestSpec {
 	spec, err := parseTestSpec([]byte(src))
 	if err != nil {
 		t.Errorf("Unexpected parse error: %+v\n", err)
