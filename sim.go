@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/tests/helper"
+	"github.com/nejucomo/transactest/assert"
 	"math/big"
 )
 
@@ -197,7 +198,7 @@ func (_ *TestSim) loadSource(src *CodeSource) ([]byte, error) {
 	} else if src.Type == HEX {
 		return hex.DecodeString(src.Info)
 	} else if src.Type == COMPILE {
-		not_implemented("source compilation for %#v", src.Info)
+		assert.NotImplemented("source compilation for %#v", src.Info)
 		return nil, nil
 	} else {
 		src.CheckType()

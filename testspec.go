@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/nejucomo/transactest/assert"
 	"math/big"
 )
 
@@ -36,7 +37,7 @@ type CodeSource struct {
 }
 
 func (cs *CodeSource) CheckType() {
-	assert(
+	assert.Assert(
 		cs.Type == HEX || cs.Type == COMPILE,
 		"Invalid CodeSourceType: %#v",
 		cs.Type)

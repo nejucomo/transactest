@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/nejucomo/transactest/assert"
 	"math/big"
 )
 
@@ -23,7 +24,7 @@ func (sim *TestSim) Transfer(from, to vm.Account, amount *big.Int) error {
 }
 
 func (sim *TestSim) AddLog(log *state.Log) {
-	not_implemented("<\n  %#v\n>.AddLog(log %#v)", sim, log)
+	assert.NotImplemented("<\n  %#v\n>.AddLog(log %#v)", sim, log)
 }
 
 func (sim *TestSim) VmType() vm.Type { return vm.StdVmTy }
@@ -38,11 +39,11 @@ func (sim *TestSim) Call(caller vm.ContextRef, addr common.Address, data []byte,
 }
 
 func (sim *TestSim) CallCode(caller vm.ContextRef, addr common.Address, data []byte, gas, price, value *big.Int) ([]byte, error) {
-	not_implemented("<\n  %#v\n>.CallCode(\n  caller %#v,\n  addr %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, addr, data, gas, price, value)
+	assert.NotImplemented("<\n  %#v\n>.CallCode(\n  caller %#v,\n  addr %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, addr, data, gas, price, value)
 	return nil, nil
 }
 
 func (sim *TestSim) Create(caller vm.ContextRef, data []byte, gas, price, value *big.Int) ([]byte, error, vm.ContextRef) {
-	not_implemented("<\n  %#v\n>.Create(\n  caller %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, data, gas, price, value)
+	assert.NotImplemented("<\n  %#v\n>.Create(\n  caller %#v,\n  data %#v,\n  gas %#v,\n  price %#v,\n  value %#v,\n  )", sim, caller, data, gas, price, value)
 	return nil, nil, nil
 }
