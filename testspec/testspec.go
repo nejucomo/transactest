@@ -1,4 +1,4 @@
-package main
+package testspec
 
 import (
 	"fmt"
@@ -62,6 +62,8 @@ type Ether struct {
 	i *big.Int
 }
 
+func EtherFromBigInt(i *big.Int) Ether        { return Ether{i} }
+func EtherFromInt64(i int64) Ether            { return Ether{big.NewInt(i)} }
 func (self Ether) Format(f fmt.State, c rune) { fmt.Fprintf(f, "%+v", self.i) }
 func (self *Ether) AsBigInt() *big.Int        { return self.i }
 

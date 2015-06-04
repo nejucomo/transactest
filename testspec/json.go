@@ -1,4 +1,4 @@
-package main
+package testspec
 
 import (
 	"encoding/json"

@@ -2,12 +2,17 @@ package main
 
 import (
 	"github.com/ethereum/go-ethereum/params"
-	"math/big"
+	"github.com/nejucomo/transactest/testspec"
 	"testing"
 )
 
 func Test_TestSpec_run_empty(t *testing.T) {
-	runTestSpecTest(t, 0, 0, TestSpec{[]Account{}, []TransactionAssertions{}})
+	runTestSpecTest(t, 0, 0,
+		testspec.TestSpec{
+			[]testspec.Account{},
+			[]testspec.TransactionAssertions{},
+		},
+	)
 }
 
 func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
@@ -20,36 +25,36 @@ func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 	txgas := params.TxGas.Int64()
 
 	runTestSpecTest(t, 6, 0,
-		TestSpec{
-			[]Account{
-				Account{
+		testspec.TestSpec{
+			[]testspec.Account{
+				testspec.Account{
 					Id:            "alice",
-					Balance:       Ether{big.NewInt(startbal)},
+					Balance:       testspec.EtherFromInt64(startbal),
 					ContractState: nil,
 				},
 			},
-			[]TransactionAssertions{
-				TransactionAssertions{
-					Transaction{
+			[]testspec.TransactionAssertions{
+				testspec.TransactionAssertions{
+					testspec.Transaction{
 						Data:     []byte{},
-						GasLimit: Ether{params.TxGas},
-						GasPrice: Ether{big.NewInt(gprice)},
+						GasLimit: testspec.EtherFromBigInt(params.TxGas),
+						GasPrice: testspec.EtherFromInt64(gprice),
 						Nonce:    0,
 						Sender:   "alice",
 						To:       "bob",
-						Value:    Ether{big.NewInt(xferamt)},
+						Value:    testspec.EtherFromInt64(xferamt),
 					},
-					Assertions{
+					testspec.Assertions{
 						// Bug: What about gas costs?
-						map[AccountId]AccountAssertion{
-							"alice": AccountAssertion{
-								Balance: Ether{big.NewInt(startbal - xferamt - gprice*txgas)},
+						map[testspec.AccountId]testspec.AccountAssertion{
+							"alice": testspec.AccountAssertion{
+								Balance: testspec.EtherFromInt64(startbal - xferamt - gprice*txgas),
 								Code:    nil,
 								Nonce:   1,
 								Storage: nil,
 							},
-							"bob": AccountAssertion{
-								Balance: Ether{big.NewInt(xferamt)},
+							"bob": testspec.AccountAssertion{
+								Balance: testspec.EtherFromInt64(xferamt),
 								Code:    nil,
 								Nonce:   0,
 								Storage: nil,
@@ -61,7 +66,7 @@ func Test_TestSpec_run_simple_single_xfer(t *testing.T) {
 		})
 }
 
-func runTestSpecTest(t *testing.T, successes, failures uint, spec TestSpec) {
+func runTestSpecTest(t *testing.T, successes, failures uint, spec testspec.TestSpec) {
 	results, err := runTestSpec(spec)
 
 	if err != nil {

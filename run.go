@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/nejucomo/transactest/testspec"
 	"io"
 	"io/ioutil"
 	"log"
@@ -28,7 +29,7 @@ func runBytes(data []byte) (results Results, err error) {
 	return runTestSpec(spec)
 }
 
-func runTestSpec(spec TestSpec) (results Results, err error) {
+func runTestSpec(spec testspec.TestSpec) (results Results, err error) {
 	var sim TestSim
 
 	sim, err = NewTestSim()

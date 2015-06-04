@@ -12,13 +12,14 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/tests/helper"
 	"github.com/nejucomo/transactest/assert"
+	"github.com/nejucomo/transactest/testspec"
 	"math/big"
 )
 
 type TestSim struct { // implements vm.Enviroment
 	memdb      *ethdb.MemDatabase
 	statedb    *state.StateDB
-	noncemap   map[AccountId]SeqNum
+	noncemap   map[testspec.AccountId]testspec.SeqNum
 	blocknum   *big.Int
 	blockhash  common.Hash
 	time       int64
@@ -48,7 +49,7 @@ func NewTestSim() (sim TestSim, err error) {
 	sim = TestSim{
 		memdb:      memdb,
 		statedb:    statedb,
-		noncemap:   map[AccountId]SeqNum{},
+		noncemap:   map[testspec.AccountId]testspec.SeqNum{},
 		blocknum:   big.NewInt(0),
 		blockhash:  common.BytesToHash(nil),
 		time:       0,
@@ -60,7 +61,7 @@ func NewTestSim() (sim TestSim, err error) {
 	return
 }
 
-func (sim *TestSim) initAccount(acct *Account) error {
+func (sim *TestSim) initAccount(acct *testspec.Account) error {
 	addr := sim.getAddress(acct.Id)
 
 	obj := state.NewStateObject(*addr, sim.memdb)
@@ -80,7 +81,7 @@ func (sim *TestSim) initAccount(acct *Account) error {
 	return nil
 }
 
-func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.Logs, gasLeft *big.Int, err error) {
+func (sim *TestSim) applyTransaction(txn *testspec.Transaction) (ret []byte, logs state.Logs, gasLeft *big.Int, err error) {
 	snapshot := sim.statedb.Copy()
 
 	// Note these need to update per-block when we add multiblock tests:
@@ -105,7 +106,7 @@ func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.L
 	return
 }
 
-func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
+func (sim *TestSim) checkAssertions(assertionresults *Results, as *testspec.Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
 	for acct, aa := range as.Accounts {
 		stob := sim.statedb.GetOrNewStateObject(*sim.getAddress(acct))
 
@@ -167,12 +168,12 @@ func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, a
 	return nil
 }
 
-func (sim *TestSim) getAddress(acct AccountId) *common.Address {
+func (sim *TestSim) getAddress(acct testspec.AccountId) *common.Address {
 	addr := common.BytesToAddress(sim.getKeyPair(acct).Address())
 	return &addr
 }
 
-func (sim *TestSim) getKeyPair(acct AccountId) *crypto.KeyPair {
+func (sim *TestSim) getKeyPair(acct testspec.AccountId) *crypto.KeyPair {
 	kp, err := crypto.NewKeyPairFromSec(sim.getSecretKey(acct))
 	if err != nil {
 		panic(err)
@@ -180,11 +181,11 @@ func (sim *TestSim) getKeyPair(acct AccountId) *crypto.KeyPair {
 	return kp
 }
 
-func (sim *TestSim) getSecretKey(acct AccountId) []byte {
+func (sim *TestSim) getSecretKey(acct testspec.AccountId) []byte {
 	return crypto.Sha3([]byte(acct))
 }
 
-func (sim *TestSim) getSenderNonce(acct AccountId) SeqNum {
+func (sim *TestSim) getSenderNonce(acct testspec.AccountId) testspec.SeqNum {
 	nonce, ok := sim.noncemap[acct]
 	if !ok {
 		panic(fmt.Sprintf("Unknown acct %+v in TestSim.GetSenderNonce", acct))
@@ -192,12 +193,12 @@ func (sim *TestSim) getSenderNonce(acct AccountId) SeqNum {
 	return nonce
 }
 
-func (_ *TestSim) loadSource(src *CodeSource) ([]byte, error) {
+func (_ *TestSim) loadSource(src *testspec.CodeSource) ([]byte, error) {
 	if src == nil {
 		return nil, nil
-	} else if src.Type == HEX {
+	} else if src.Type == testspec.HEX {
 		return hex.DecodeString(src.Info)
-	} else if src.Type == COMPILE {
+	} else if src.Type == testspec.COMPILE {
 		assert.NotImplemented("source compilation for %#v", src.Info)
 		return nil, nil
 	} else {
