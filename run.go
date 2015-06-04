@@ -51,7 +51,10 @@ func runTestSpec(spec TestSpec) (results Results, err error) {
 			return
 		}
 
-		sim.checkAssertions(&results, &ta.Assertions, result, logs, gasleft)
+		err = sim.checkAssertions(&results, &ta.Assertions, result, logs, gasleft)
+		if err != nil {
+			return
+		}
 	}
 
 	return

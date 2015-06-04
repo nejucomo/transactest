@@ -19,8 +19,27 @@ type Account struct {
 }
 
 type ContractState struct {
-	Code    string
+	Code    *CodeSource
 	Storage state.Storage
+}
+
+type CodeSourceType int
+
+const (
+	HEX     CodeSourceType = 1
+	COMPILE CodeSourceType = 2
+)
+
+type CodeSource struct {
+	Type CodeSourceType
+	Info string
+}
+
+func (cs *CodeSource) CheckType() {
+	assert(
+		cs.Type == HEX || cs.Type == COMPILE,
+		"Invalid CodeSourceType: %#v",
+		cs.Type)
 }
 
 type TransactionAssertions struct {
@@ -54,9 +73,7 @@ type Assertions struct {
 
 type AccountAssertion struct {
 	Balance Ether
-	Code    ByteCode
+	Code    *CodeSource
 	Nonce   SeqNum
 	Storage state.Storage
 }
-
-type ByteCode []byte

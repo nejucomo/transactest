@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/hex"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -58,7 +59,7 @@ func NewTestSim() (sim TestSim, err error) {
 	return
 }
 
-func (sim *TestSim) initAccount(acct *Account) {
+func (sim *TestSim) initAccount(acct *Account) error {
 	addr := sim.getAddress(acct.Id)
 
 	obj := state.NewStateObject(*addr, sim.memdb)
@@ -66,11 +67,16 @@ func (sim *TestSim) initAccount(acct *Account) {
 
 	if acct.ContractState != nil {
 		// BUG: What about Storage?
-		obj.SetCode([]byte(acct.ContractState.Code))
+		code, err := sim.loadSource(acct.ContractState.Code)
+		if err != nil {
+			return err
+		}
+		obj.SetCode(code)
 	}
 	sim.statedb.SetStateObject(obj)
 
 	sim.noncemap[acct.Id] = acct.Nonce
+	return nil
 }
 
 func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.Logs, gasLeft *big.Int, err error) {
@@ -98,7 +104,7 @@ func (sim *TestSim) applyTransaction(txn *Transaction) (ret []byte, logs state.L
 	return
 }
 
-func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) {
+func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
 	for acct, aa := range as.Accounts {
 		stob := sim.statedb.GetOrNewStateObject(*sim.getAddress(acct))
 
@@ -109,8 +115,17 @@ func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, a
 			aa.Balance.AsBigInt(),
 			stob.Balance())
 
+		/* BUG: if we pre-load all sources, this method wouldn't
+		 * have an error condition, and compilation problems
+		 * would be detected early.
+		 */
+		code, err := sim.loadSource(aa.Code)
+		if err != nil {
+			return err
+		}
+
 		assertionresults.Record(
-			bytes.Compare(aa.Code, stob.Code()) == 0,
+			bytes.Compare(code, stob.Code()) == 0,
 			"Account %+v - Code: expected %+v vs actual %+v",
 			acct,
 			aa.Code,
@@ -147,6 +162,8 @@ func (sim *TestSim) checkAssertions(assertionresults *Results, as *Assertions, a
 				actualdesc)
 		}
 	}
+
+	return nil
 }
 
 func (sim *TestSim) getAddress(acct AccountId) *common.Address {
@@ -172,4 +189,18 @@ func (sim *TestSim) getSenderNonce(acct AccountId) SeqNum {
 		panic(fmt.Sprintf("Unknown acct %+v in TestSim.GetSenderNonce", acct))
 	}
 	return nonce
+}
+
+func (_ *TestSim) loadSource(src *CodeSource) ([]byte, error) {
+	if src == nil {
+		return nil, nil
+	} else if src.Type == HEX {
+		return hex.DecodeString(src.Info)
+	} else if src.Type == COMPILE {
+		not_implemented("source compilation for %#v", src.Info)
+		return nil, nil
+	} else {
+		src.CheckType()
+		return nil, nil
+	}
 }
