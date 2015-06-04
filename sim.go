@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/tests/helper"
 	"github.com/nejucomo/transactest/assert"
+	"github.com/nejucomo/transactest/results"
 	"github.com/nejucomo/transactest/testspec"
 	"math/big"
 )
@@ -106,7 +107,7 @@ func (sim *TestSim) applyTransaction(txn *testspec.Transaction) (ret []byte, log
 	return
 }
 
-func (sim *TestSim) checkAssertions(assertionresults *Results, as *testspec.Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
+func (sim *TestSim) checkAssertions(assertionresults *results.Results, as *testspec.Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
 	for acct, aa := range as.Accounts {
 		stob := sim.statedb.GetOrNewStateObject(*sim.getAddress(acct))
 
