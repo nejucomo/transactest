@@ -1,12 +1,14 @@
 package main
 
-import "os"
-
+import (
+	"github.com/nejucomo/transactest/run"
+	"os"
+)
 
 func main() {
 	if len(os.Args) > 1 {
-		runPath(os.Args[1])
+		run.Path(os.Args[1])
 	} else {
-		runReader(os.Stdin)
+		run.Reader(os.Stdin)
 	}
 }

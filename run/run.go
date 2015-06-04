@@ -1,4 +1,4 @@
-package main
+package run
 
 import (
 	"github.com/ethereum/go-ethereum/core/state"
@@ -12,13 +12,13 @@ import (
 	"os"
 )
 
-func runPath(p string) (results report.Report, err error) {
+func Path(p string) (results report.Report, err error) {
 	f, err := os.Open(p)
 	checkErr(err)
-	return runReader(f)
+	return Reader(f)
 }
 
-func runReader(r io.Reader) (results report.Report, err error) {
+func Reader(r io.Reader) (results report.Report, err error) {
 	data, err := ioutil.ReadAll(r)
 	checkErr(err)
 	return runBytes(data)
