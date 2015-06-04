@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/nejucomo/transactest/report"
+	"github.com/nejucomo/transactest/simulator"
 	"github.com/nejucomo/transactest/testspec"
 	"io"
 	"io/ioutil"
@@ -31,15 +32,14 @@ func runBytes(data []byte) (results report.Report, err error) {
 }
 
 func runTestSpec(spec testspec.TestSpec) (results report.Report, err error) {
-	var sim TestSim
-
-	sim, err = NewTestSim()
-	if err != nil {
+	sim, err2 := simulator.New()
+	if err2 != nil {
+		err = err2
 		return
 	}
 
 	for _, acc := range spec.Accounts {
-		sim.initAccount(&acc)
+		sim.InitAccount(&acc)
 	}
 
 	for _, ta := range spec.Transactions {
@@ -48,12 +48,12 @@ func runTestSpec(spec testspec.TestSpec) (results report.Report, err error) {
 			logs    state.Logs
 			gasleft *big.Int
 		)
-		result, logs, gasleft, err = sim.applyTransaction(&ta.Transaction)
+		result, logs, gasleft, err = sim.ApplyTransaction(&ta.Transaction)
 		if err != nil {
 			return
 		}
 
-		err = sim.checkAssertions(&results, &ta.Assertions, result, logs, gasleft)
+		err = sim.CheckAssertions(&results, &ta.Assertions, result, logs, gasleft)
 		if err != nil {
 			return
 		}

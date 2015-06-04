@@ -1,4 +1,4 @@
-package main
+package simulator
 
 import (
 	"bytes"
@@ -17,7 +17,7 @@ import (
 	"math/big"
 )
 
-type TestSim struct { // implements vm.Enviroment
+type testsim struct { // implements vm.Enviroment
 	memdb      *ethdb.MemDatabase
 	statedb    *state.StateDB
 	noncemap   map[testspec.AccountId]testspec.SeqNum
@@ -35,7 +35,7 @@ const (
 	ORIGIN   = "ORIGIN"
 )
 
-func NewTestSim() (sim TestSim, err error) {
+func New() (sim testsim, err error) {
 	var memdb *ethdb.MemDatabase
 
 	memdb, err = ethdb.NewMemDatabase()
@@ -47,7 +47,7 @@ func NewTestSim() (sim TestSim, err error) {
 	statedb := state.New(roothash, memdb)
 
 	// FIXME: Handle many dummy values better:
-	sim = TestSim{
+	sim = testsim{
 		memdb:      memdb,
 		statedb:    statedb,
 		noncemap:   map[testspec.AccountId]testspec.SeqNum{},
@@ -62,7 +62,7 @@ func NewTestSim() (sim TestSim, err error) {
 	return
 }
 
-func (sim *TestSim) initAccount(acct *testspec.Account) error {
+func (sim *testsim) InitAccount(acct *testspec.Account) error {
 	addr := sim.getAddress(acct.Id)
 
 	obj := state.NewStateObject(*addr, sim.memdb)
@@ -82,7 +82,7 @@ func (sim *TestSim) initAccount(acct *testspec.Account) error {
 	return nil
 }
 
-func (sim *TestSim) applyTransaction(txn *testspec.Transaction) (ret []byte, logs state.Logs, gasLeft *big.Int, err error) {
+func (sim *testsim) ApplyTransaction(txn *testspec.Transaction) (ret []byte, logs state.Logs, gasLeft *big.Int, err error) {
 	snapshot := sim.statedb.Copy()
 
 	// Note these need to update per-block when we add multiblock tests:
@@ -107,7 +107,7 @@ func (sim *TestSim) applyTransaction(txn *testspec.Transaction) (ret []byte, log
 	return
 }
 
-func (sim *TestSim) checkAssertions(report *report.Report, as *testspec.Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
+func (sim *testsim) CheckAssertions(report *report.Report, as *testspec.Assertions, applyresult []byte, logs state.Logs, gasleft *big.Int) error {
 	for acct, aa := range as.Accounts {
 		stob := sim.statedb.GetOrNewStateObject(*sim.getAddress(acct))
 
@@ -169,12 +169,12 @@ func (sim *TestSim) checkAssertions(report *report.Report, as *testspec.Assertio
 	return nil
 }
 
-func (sim *TestSim) getAddress(acct testspec.AccountId) *common.Address {
+func (sim *testsim) getAddress(acct testspec.AccountId) *common.Address {
 	addr := common.BytesToAddress(sim.getKeyPair(acct).Address())
 	return &addr
 }
 
-func (sim *TestSim) getKeyPair(acct testspec.AccountId) *crypto.KeyPair {
+func (sim *testsim) getKeyPair(acct testspec.AccountId) *crypto.KeyPair {
 	kp, err := crypto.NewKeyPairFromSec(sim.getSecretKey(acct))
 	if err != nil {
 		panic(err)
@@ -182,19 +182,19 @@ func (sim *TestSim) getKeyPair(acct testspec.AccountId) *crypto.KeyPair {
 	return kp
 }
 
-func (sim *TestSim) getSecretKey(acct testspec.AccountId) []byte {
+func (sim *testsim) getSecretKey(acct testspec.AccountId) []byte {
 	return crypto.Sha3([]byte(acct))
 }
 
-func (sim *TestSim) getSenderNonce(acct testspec.AccountId) testspec.SeqNum {
+func (sim *testsim) getSenderNonce(acct testspec.AccountId) testspec.SeqNum {
 	nonce, ok := sim.noncemap[acct]
 	if !ok {
-		panic(fmt.Sprintf("Unknown acct %+v in TestSim.GetSenderNonce", acct))
+		panic(fmt.Sprintf("Unknown acct %+v in testsim.GetSenderNonce", acct))
 	}
 	return nonce
 }
 
-func (_ *TestSim) loadSource(src *testspec.CodeSource) ([]byte, error) {
+func (_ *testsim) loadSource(src *testspec.CodeSource) ([]byte, error) {
 	if src == nil {
 		return nil, nil
 	} else if src.Type == testspec.HEX {
